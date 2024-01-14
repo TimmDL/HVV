@@ -14,7 +14,6 @@ color_scale = {
     'operational': 'blue'
 }
 
-# Function to aggregate machine information and calculate size for each station
 def aggregate_info(group):
     total_machines = len(group)
     broken_machines = sum(state == 'OUT_OF_ORDER' for state in group['state'])
@@ -24,11 +23,12 @@ def aggregate_info(group):
 
     if broken_machines > 0:
         color = 'broken'
-    elif warning_machines > 0:
+    elif warning_machines > 0 and broken_machines == 0:  # Ensure no broken machines are present
         color = 'warning'
     else:
         color = 'operational'
     return info, color, size
+
 
 
 # Group by 'HstName' and aggregate data
