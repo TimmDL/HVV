@@ -10,7 +10,7 @@ st.title('**Your Dashboard Title**')
 st.write('Description of the dashboard. Explains what it does, how to use it, etc.')
 
 # Read the CSV file
-df = pd.read_csv('/Data/sst_alldata.csv')
+df = pd.read_csv('Data/sst_alldata.csv')
 df['Timestamp'] = pd.to_datetime(df['Timestamp'])
 recent_stations = df.loc[df.groupby('Automatennr')['Timestamp'].idxmax()]
 
