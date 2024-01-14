@@ -7,10 +7,10 @@ df = pd.read_csv('Data/sst_alldata.csv')
 df['Timestamp'] = pd.to_datetime(df['Timestamp'])
 recent_stations = df.loc[df.groupby('Automatennr')['Timestamp'].idxmax()]
 
-# Define color for stations based on the worst machine state
+# Define color for stations based on the simplified machine state
 color_scale = {
     'broken': 'red',
-    'warning': '#FFA15A',
+    'warning': 'magenta',  
     'operational': 'blue'
 }
 
@@ -40,18 +40,39 @@ grouped = recent_stations.groupby('HstName').apply(lambda x: pd.Series({
     'Longitude': x['Longitude'].iloc[0]
 })).reset_index()
 
-# Create the scatter map
-fig = px.scatter_mapbox(grouped,
-                        hover_name='HstName',
-                        hover_data=['Machine_Info'],
-                        lat="Latitude",
-                        lon="Longitude",
-                        color='Station_Color',
-                        size='Size',
-                        color_discrete_map=color_scale,
-                        size_max=30,  # Adjust the maximum size as needed
-                        zoom=12,
-                        mapbox_style="open-street-map")
+# Checkbox for showing all LMU states
+show_all_states = st.checkbox('Show all LMU states')
 
-# Display the map in Streamlit
-st.plotly_chart(fig)
+if show_all_states:
+    # Plotting all states
+    fig_all_states = px.scatter_mapbox(recent_stations,
+                                       lat="Latitude",
+                                       lon="Longitude",
+                                       color='state',  # Automatically assign colors
+                                       hover_name='HstName',
+                                       hover_data=['state'],
+                                       size_max=30,
+                                       zoom=12,
+                                       mapbox_style="open-street-map")
+    st.plotly_chart(fig_all_states)
+
+else:
+    # Existing logic for simplified view
+    grouped = recent_stations.groupby('HstName').apply(lambda x: pd.Series({
+        'Machine_Info': aggregate_info(x)[0],
+        'Station_Color': aggregate_info(x)[1],
+        'Size': aggregate_info(x)[2],
+        'Latitude': x['Latitude'].iloc[0],
+        'Longitude': x['Longitude'].iloc[0]
+    })).reset_index()
+
+    fig = px.scatter_mapbox(grouped,
+                            lat="Latitude",
+                            lon="Longitude",
+                            color='Station_Color',
+                            size='Size',
+                            color_discrete_map=color_scale,
+                            size_max=30,
+                            zoom=12,
+                            mapbox_style="open-street-map")
+    st.plotly_chart(fig)
