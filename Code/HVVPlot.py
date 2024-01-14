@@ -54,7 +54,7 @@ if show_all_states:
                                        lon="Longitude",
                                        color='state',  # Automatically assign colors
                                        hover_name='HstName',
-                                       hover_data=['state'],
+                                       hover_data={'HstName': True, 'LmuId': True, 'Linie': True, 'Standplatz': True},
                                        size_max=30,
                                        zoom=12,
                                        mapbox_style="open-street-map")
@@ -88,7 +88,7 @@ search_query = st.text_input("Search:", "").lower()
 
 # Specify desired column order
 desired_order = ['Timestamp', 'state', 'LmuId', 'HstName', 'Standplatz', 'Linie',
-                 'LmuState', 'AlarmState', 'CompType', 'CompNr', 'prevState', 
+                 'LmuState', 'AlarmState', 'CompType', 'CompNr', 'prevState',
                  'comment', 'Automatennr', 'EVU / Bereich', 'Status Gerät','Latitude', 'Longitude']
 
 # Column toggle
@@ -99,7 +99,7 @@ selected_columns = st.multiselect("Select columns to display:", available_column
 st.write("Filter Table by State:")
 show_out_of_order = st.checkbox('Show Out of Order', True)
 show_warning = st.checkbox('Show Warning', True)
-show_operational = st.checkbox('Show Operational', True)
+show_operational = st.checkbox('Show Operational', False)
 
 filtered_states = []
 if show_out_of_order:
