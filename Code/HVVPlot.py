@@ -17,7 +17,7 @@ color_scale = {
 # Function to aggregate machine information and calculate size for each station
 def aggregate_info(group):
     total_machines = len(group)
-    broken_machines = sum(state == 'BROKEN' for state in group['state'])
+    broken_machines = sum(state == 'OUT_OF_ORDER' for state in group['state'])
     warning_machines = sum(state == 'WARNING' for state in group['state'])
     size = 2 + (broken_machines + warning_machines) / total_machines * 20
     info = "<br>".join([f"Machine {row['Automatennr']}: {row['state']}" for _, row in group.iterrows()])
@@ -29,6 +29,7 @@ def aggregate_info(group):
     else:
         color = 'operational'
     return info, color, size
+
 
 # Group by 'HstName' and aggregate data
 grouped = recent_stations.groupby('HstName').apply(lambda x: pd.Series({
