@@ -10,7 +10,7 @@ st.title('**Your Dashboard Title**')
 st.write('Description of the dashboard. Explains what it does, how to use it, etc.')
 
 # Read the CSV file
-df = pd.read_csv('Data/sst_alldata.csv')
+df = pd.read_csv('/Users/timmdill/Documents/GitHub/HVV/Data/sst_alldata.csv')
 df['Timestamp'] = pd.to_datetime(df['Timestamp'])
 recent_stations = df.loc[df.groupby('Automatennr')['Timestamp'].idxmax()]
 
@@ -21,67 +21,75 @@ color_scale = {
     'operational': 'blue'
 }
 
-def aggregate_info(group):
-    total_machines = len(group)
-    broken_machines = sum(state == 'OUT_OF_ORDER' for state in group['state'])
-    warning_machines = sum(state == 'WARNING' for state in group['state'])
-    size = 2 + (broken_machines + warning_machines) / total_machines * 20
-    info = "<br>".join([f"Machine {row['Automatennr']}: {row['state']}" for _, row in group.iterrows()])
 
-    if broken_machines > 0:
-        color = 'broken'
-    elif warning_machines > 0 and broken_machines == 0:  # Ensure no broken machines are present
-        color = 'warning'
-    else:
+# Function to create aggregated view
+def create_aggregated_view():
+    def aggregate_info(group):
+        total_machines = len(group)
+        broken_machines = sum(state == 'OUT_OF_ORDER' for state in group['state'])
+        warning_machines = sum(state == 'WARNING' for state in group['state'])
+        size = 2 + (broken_machines + warning_machines) / total_machines * 20
+        machine_details = "<br>".join([
+            f"LmuId: {row['LmuId']}, State: {row['state']}, Linie: {row['Linie']}" +
+            (f", Standplatz: {row['Standplatz']}" if pd.notna(row['Standplatz']) else "")
+            for _, row in group.iterrows()
+        ])
         color = 'operational'
-    return info, color, size
+        if broken_machines > 0:
+            color = 'broken'
+        elif warning_machines > 0:
+            color = 'warning'
 
-# Group by 'HstName' and aggregate data
-grouped = recent_stations.groupby('HstName').apply(lambda x: pd.Series({
-    'Machine_Info': aggregate_info(x)[0],
-    'Station_Status': aggregate_info(x)[1],
-    'Size': aggregate_info(x)[2],
-    'Latitude': x['Latitude'].iloc[0],
-    'Longitude': x['Longitude'].iloc[0]
-})).reset_index()
+        # Adding a line break after Machine_Info
+        return f"{machine_details}<br>", color, size
 
-# Checkbox for showing all LMU states
-show_all_states = st.checkbox('Show all LMU states')
-if show_all_states:
-    # Plotting all states
-    fig_all_states = px.scatter_mapbox(recent_stations,
-                                       lat="Latitude",
-                                       lon="Longitude",
-                                       color='state',  # Automatically assign colors
-                                       hover_name='HstName',
-                                       hover_data={'HstName': True, 'LmuId': True, 'Linie': True, 'Standplatz': True},
-                                       size_max=30,
-                                       zoom=12,
-                                       mapbox_style="open-street-map")
-    fig_all_states.update_layout(height=600)
-    st.plotly_chart(fig_all_states, use_container_width=True)
+    grouped = recent_stations.groupby('HstName').apply(aggregate_info).reset_index()
+    grouped[['Machine_Info', 'Station_Status', 'Size']] = pd.DataFrame(grouped[0].tolist(), index=grouped.index)
+    grouped.drop(columns=[0], inplace=True)
 
-else:
-    # Existing logic for simplified view
-    grouped = recent_stations.groupby('HstName').apply(lambda x: pd.Series({
-        'Machine_Info': aggregate_info(x)[0],
-        'Station_Status': aggregate_info(x)[1],
-        'Size': aggregate_info(x)[2],
-        'Latitude': x['Latitude'].iloc[0],
-        'Longitude': x['Longitude'].iloc[0]
-    })).reset_index()
+    station_coordinates = recent_stations[['HstName', 'Latitude', 'Longitude']].drop_duplicates()
+    grouped = pd.merge(grouped, station_coordinates, on='HstName', how='left')
 
     fig = px.scatter_mapbox(grouped,
                             lat="Latitude",
                             lon="Longitude",
                             color='Station_Status',
-                            size='Size',
                             color_discrete_map=color_scale,
+                            hover_name='HstName',
+                            hover_data={'Machine_Info': True},
+                            size='Size',
                             size_max=30,
                             zoom=12,
                             mapbox_style="open-street-map")
+
     fig.update_layout(height=600)
     st.plotly_chart(fig, use_container_width=True)
+
+
+# Function to create detailed view
+def create_detailed_view():
+    fig = px.scatter_mapbox(df,
+                            lat="Latitude",
+                            lon="Longitude",
+                            color='state',
+                            color_discrete_map=color_scale,
+                            hover_name='LmuId',
+                            hover_data={'state': True, 'Linie': True, 'Standplatz': True},
+                            size_max=15,
+                            zoom=10,
+                            mapbox_style="open-street-map")
+
+    fig.update_layout(height=600)
+    st.plotly_chart(fig, use_container_width=True)
+
+
+# Checkbox for toggling between views
+show_detailed_view = st.checkbox('Show detailed view for each machine')
+
+if show_detailed_view:
+    create_detailed_view()
+else:
+    create_aggregated_view()
 
 # Search bar and column toggle
 search_query = st.text_input("Search:", "").lower()
@@ -89,7 +97,7 @@ search_query = st.text_input("Search:", "").lower()
 # Specify desired column order
 desired_order = ['Timestamp', 'state', 'LmuId', 'HstName', 'Standplatz', 'Linie',
                  'LmuState', 'AlarmState', 'CompType', 'CompNr', 'prevState',
-                 'comment', 'Automatennr', 'EVU / Bereich', 'Status Gerät','Latitude', 'Longitude']
+                 'comment', 'Automatennr', 'EVU / Bereich', 'Status Gerät', 'Latitude', 'Longitude']
 
 # Column toggle
 available_columns = recent_stations.columns.tolist()
@@ -110,7 +118,8 @@ if show_operational:
     filtered_states.append('OPERATIONAL')
 
 filtered_df = recent_stations[recent_stations['state'].isin(filtered_states)]
-filtered_df = filtered_df[filtered_df.apply(lambda row: row.astype(str).str.lower().str.contains(search_query).any(), axis=1)]
+filtered_df = filtered_df[
+    filtered_df.apply(lambda row: row.astype(str).str.lower().str.contains(search_query).any(), axis=1)]
 filtered_df = filtered_df[selected_columns]
 
 # Apply the selected order to the dataframe for display
