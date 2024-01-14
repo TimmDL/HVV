@@ -7,20 +7,27 @@ df = pd.read_csv('Data/sst_alldata.csv')
 df['Timestamp'] = pd.to_datetime(df['Timestamp'])
 recent_stations = df.loc[df.groupby('Automatennr')['Timestamp'].idxmax()]
 
-# Define color for stations with broken machines
+# Define color for stations based on the worst machine state
 color_scale = {
-    'broken': 'red',  # Color for stations with any broken machine
-    'operational': 'blue'  # Color for fully operational stations
+    'broken': 'red',
+    'warning': 'orange',
+    'operational': 'blue'
 }
 
 # Function to aggregate machine information and calculate size for each station
 def aggregate_info(group):
     total_machines = len(group)
-    broken_machines = sum(state not in ['OPERATIONAL', 'IN_OPERATION'] for state in group['state'])
-    broken_ratio = broken_machines / total_machines if total_machines > 0 else 0
-    size = 2 + broken_ratio * 20
+    broken_machines = sum(state == 'BROKEN' for state in group['state'])
+    warning_machines = sum(state == 'WARNING' for state in group['state'])
+    size = 2 + (broken_machines + warning_machines) / total_machines * 20
     info = "<br>".join([f"Machine {row['Automatennr']}: {row['state']}" for _, row in group.iterrows()])
-    color = 'broken' if broken_machines > 0 else 'operational'
+
+    if broken_machines > 0:
+        color = 'broken'
+    elif warning_machines > 0:
+        color = 'warning'
+    else:
+        color = 'operational'
     return info, color, size
 
 # Group by 'HstName' and aggregate data
@@ -40,10 +47,7 @@ fig = px.scatter_mapbox(grouped,
                         lon="Longitude",
                         color='Station_Color',
                         size='Size',
-                        color_discrete_map={
-                            'broken': 'red',
-                            'operational': 'blue'
-                        },
+                        color_discrete_map=color_scale,
                         size_max=30,  # Adjust the maximum size as needed
                         zoom=12,
                         mapbox_style="open-street-map")
