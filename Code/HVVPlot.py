@@ -10,7 +10,7 @@ recent_stations = df.loc[df.groupby('Automatennr')['Timestamp'].idxmax()]
 # Define color for stations based on the worst machine state
 color_scale = {
     'broken': 'red',
-    'warning': 'yellow',
+    'warning': 'goldenrod',
     'operational': 'blue'
 }
 
