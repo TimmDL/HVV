@@ -7,39 +7,46 @@ df = pd.read_csv('Data/sst_alldata.csv')
 df['Timestamp'] = pd.to_datetime(df['Timestamp'])
 recent_stations = df.loc[df.groupby('Automatennr')['Timestamp'].idxmax()]
 
-# Function to calculate size based on the state
-def calculate_size(state):
-    if state not in ['OPERATIONAL', 'IN_OPERATION']:
-        return 20  # Size for broken machines
-    return 10  # Size for operational machines
+# Define color for stations with broken machines
+color_scale = {
+    'broken': 'red',  # Color for stations with any broken machine
+    'operational': 'blue'  # Color for fully operational stations
+}
 
-# Prepare the data for plotting
-grouped = recent_stations.groupby(['HstName', 'state']).apply(lambda x: pd.Series({
-    'Size': calculate_size(x['state'].iloc[0]),
+# Function to aggregate machine information and calculate size for each station
+def aggregate_info(group):
+    total_machines = len(group)
+    broken_machines = sum(state not in ['OPERATIONAL', 'IN_OPERATION'] for state in group['state'])
+    broken_ratio = broken_machines / total_machines if total_machines > 0 else 0
+    size = 2 + broken_ratio * 20
+    info = "<br>".join([f"Machine {row['Automatennr']}: {row['state']}" for _, row in group.iterrows()])
+    color = 'broken' if broken_machines > 0 else 'operational'
+    return info, color, size
+
+# Group by 'HstName' and aggregate data
+grouped = recent_stations.groupby('HstName').apply(lambda x: pd.Series({
+    'Machine_Info': aggregate_info(x)[0],
+    'Station_Color': aggregate_info(x)[1],
+    'Size': aggregate_info(x)[2],
     'Latitude': x['Latitude'].iloc[0],
     'Longitude': x['Longitude'].iloc[0]
 })).reset_index()
 
-# Create the scatter plot
+# Create the scatter map
 fig = px.scatter_mapbox(grouped,
+                        hover_name='HstName',
+                        hover_data=['Machine_Info'],
                         lat="Latitude",
                         lon="Longitude",
-                        color='state',  # Color by state
-                        size='Size',  # Size by the calculated value
-                        hover_data=['HstName', 'state'],
+                        color='Station_Color',
+                        size='Size',
+                        color_discrete_map={
+                            'broken': 'red',
+                            'operational': 'blue'
+                        },
+                        size_max=30,  # Adjust the maximum size as needed
                         zoom=12,
                         mapbox_style="open-street-map")
-
-# Update the layout to show the legend
-fig.update_layout(
-    legend_title_text='State',
-    legend=dict(
-        yanchor="top",
-        y=0.99,
-        xanchor="left",
-        x=0.01
-    )
-)
 
 # Display the map in Streamlit
 st.plotly_chart(fig)
