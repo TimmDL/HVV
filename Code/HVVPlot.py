@@ -6,11 +6,11 @@ import streamlit as st
 st.set_page_config(layout="wide")
 
 # Add title and description
-st.title('**Your Dashboard Title**')
+st.title('**Dashboard: Maintenance Status of the SSTs**')
 st.write('Description of the dashboard. Explains what it does, how to use it, etc.')
 
 # Read the CSV file
-df = pd.read_csv('Data/sst_alldata.csv')
+df = pd.read_csv('/Users/timmdill/Documents/GitHub/HVV/Data/sst_alldata.csv')
 df['Timestamp'] = pd.to_datetime(df['Timestamp'])
 recent_stations = df.loc[df.groupby('Automatennr')['Timestamp'].idxmax()]
 
@@ -18,7 +18,8 @@ recent_stations = df.loc[df.groupby('Automatennr')['Timestamp'].idxmax()]
 color_scale = {
     'broken': 'red',
     'warning': '#FFA15A',
-    'operational': 'blue'
+    'operational': 'blue',
+    'error_resource': '#FF6692',
 }
 
 
@@ -28,7 +29,8 @@ def create_aggregated_view():
         total_machines = len(group)
         broken_machines = sum(state == 'OUT_OF_ORDER' for state in group['state'])
         warning_machines = sum(state == 'WARNING' for state in group['state'])
-        size = 2 + (broken_machines + warning_machines) / total_machines * 20
+        resource_machines = sum(state == 'ERROR_RESOURCE' for state in group['state'])
+        size = 2 + (broken_machines + warning_machines + resource_machines) / total_machines * 20
         machine_details = "<br>".join([
             f"LmuId: {row['LmuId']}, State: {row['state']}, Linie: {row['Linie']}" +
             (f", Standplatz: {row['Standplatz']}" if pd.notna(row['Standplatz']) else "")
@@ -39,6 +41,8 @@ def create_aggregated_view():
             color = 'broken'
         elif warning_machines > 0:
             color = 'warning'
+        elif resource_machines > 0:
+            color = 'error_resource'
 
         # Adding a line break after Machine_Info
         return f"{machine_details}<br>", color, size
@@ -59,40 +63,37 @@ def create_aggregated_view():
                             hover_data={'Machine_Info': True},
                             size='Size',
                             size_max=30,
-                            zoom=12,
+                            zoom=11,
                             mapbox_style="open-street-map")
 
     fig.update_layout(height=600)
     st.plotly_chart(fig, use_container_width=True)
 
 
-# Function to create detailed view
-def create_detailed_view():
-    fig = px.scatter_mapbox(df,
-                            lat="Latitude",
-                            lon="Longitude",
-                            color='state',
-                            color_discrete_map=color_scale,
-                            hover_name='LmuId',
-                            hover_data={'state': True, 'Linie': True, 'Standplatz': True},
-                            size_max=15,
-                            zoom=10,
-                            mapbox_style="open-street-map")
-
-    fig.update_layout(height=600)
-    st.plotly_chart(fig, use_container_width=True)
+# Display scatter_mapbox
+create_aggregated_view()
 
 
-# Checkbox for toggling between views
-show_detailed_view = st.checkbox('Show detailed view for each machine')
+# Define the space removal function
+def remove_spaces(text_input):
+    return ''.join(text_input.split())
 
-if show_detailed_view:
-    create_detailed_view()
-else:
-    create_aggregated_view()
+
+# Define the spaceless search function
+def spaceless_search(search_query, dataframe):
+    # Remove spaces from the search query
+    normalized_query = remove_spaces(search_query.lower())
+
+    def contains_query(row):
+        # Remove spaces and lowercase row data before comparison
+        row_string = remove_spaces(' '.join(map(str, row)).lower())
+        return normalized_query in row_string
+
+    return dataframe[dataframe.apply(contains_query, axis=1)]
+
 
 # Search bar and column toggle
-search_query = st.text_input("Search:", "").lower()
+search_query = st.text_input("Search:", "").strip()
 
 # Specify desired column order
 desired_order = ['Timestamp', 'state', 'LmuId', 'HstName', 'Standplatz', 'Linie',
@@ -107,6 +108,7 @@ selected_columns = st.multiselect("Select columns to display:", available_column
 st.write("Filter Table by State:")
 show_out_of_order = st.checkbox('Show Out of Order', True)
 show_warning = st.checkbox('Show Warning', True)
+show_resource = st.checkbox('Show missing resources', True)
 show_operational = st.checkbox('Show Operational', False)
 
 filtered_states = []
@@ -116,14 +118,23 @@ if show_warning:
     filtered_states.append('WARNING')
 if show_operational:
     filtered_states.append('OPERATIONAL')
+    filtered_states.append('IN_OPERATION')
+if show_resource:
+    filtered_states.append('ERROR_RESOURCE')
 
-filtered_df = recent_stations[recent_stations['state'].isin(filtered_states)]
-filtered_df = filtered_df[
-    filtered_df.apply(lambda row: row.astype(str).str.lower().str.contains(search_query).any(), axis=1)]
-filtered_df = filtered_df[selected_columns]
+# Check if no checkboxes are selected
+if not filtered_states:
+    st.warning("Please select at least one option to display the data.")
+else:
+    filtered_df = recent_stations[recent_stations['state'].isin(filtered_states)]
 
-# Apply the selected order to the dataframe for display
-filtered_df = filtered_df[selected_columns]
+    if search_query:
+        filtered_df = spaceless_search(search_query, filtered_df)
 
-# Display the filtered dataframe
-st.dataframe(filtered_df)
+    filtered_df = filtered_df[selected_columns]
+
+    # Apply the selected order to the dataframe for display
+    filtered_df = filtered_df[selected_columns]
+
+    # Display the filtered dataframe
+    st.dataframe(filtered_df)
