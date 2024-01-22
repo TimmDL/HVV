@@ -2,7 +2,7 @@
 # SST Operational Efficiency Application - DDCo-Lab Project
 
 ## Project Description
-This repository hosts the SST Operational Efficiency Application, developed as a part of the DDCo-Lab course in collaboration with the HVV (Hamburg Public Transport Company). This web application is designed to optimize the management of service station terminals (SSTs) within public transport systems. It provides real-time data visualization and operational insights to improve maintenance efficiency and response times.
+This repository hosts the SST Operational Efficiency Application, developed as a part of the DDCo-Lab course in collaboration with the HVV (Hamburg Public Transport Company). This web application is designed to optimize the management of Self-Service Terminals (SSTs) within public transport systems. It provides real-time data visualization and operational insights to improve maintenance efficiency and response times.
 
 ## Key Features
 - Interactive map showcasing real-time SST statuses.
@@ -11,7 +11,7 @@ This repository hosts the SST Operational Efficiency Application, developed as a
 - Future potential for route planning for service personnel and verification for ticket control.
 
 ## Academic Context
-This project is part of the DDCo-Lab course at [University Name], aiming to apply data-driven solutions to real-world challenges in public transport, in partnership with HVV.
+This project is part of the DDCo-Lab course at University of Hamburg, aiming to apply data-driven solutions to real-world challenges in public transport, in partnership with HVV.
 
 ## Installation Instructions
 1. Clone the repository:
@@ -36,11 +36,11 @@ This project welcomes contributions from students and professionals. Please foll
 This project is available under the [MIT License](LICENSE).
 
 ## Contact and Acknowledgements
-- Project maintained by students of [University Name].
+- Project maintained by students of University of Hamburg.
 - Special thanks to HVV for their collaboration and insights.
-- Contact [Your Name/Email] for more information or inquiries.
+- Contact @TimmDL for more information or inquiries.
 
 ## Further Information
-- DDCo-Lab Course Information: [Link to course or university page]
-- HVV: [Link to HVV website or relevant page]
+- DDCo-Lab Course Information: https://www.isa.uni-hamburg.de/ddlitlab.html
+- HVV: https://www.hvv.de/de)https://www.hvv.de/de
 
