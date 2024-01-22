@@ -38,7 +38,7 @@ This project is available under the [MIT License](LICENSE).
 ## Contact and Acknowledgements
 - Project maintained by students of University of Hamburg.
 - Special thanks to HVV for their collaboration and insights.
-- For more information or inquiries, contact [@TimmDL]([https://github.com/YourGitHubUsername](https://github.com/TimmDL/))
+- For more information or inquiries, contact [@TimmDL](https://github.com/TimmDL/)
 ## Further Information
 - DDCo-Lab Course Information: https://www.isa.uni-hamburg.de/ddlitlab.html
 - HVV: https://www.hvv.de/de)https://www.hvv.de/de
