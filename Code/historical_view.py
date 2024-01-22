@@ -1,4 +1,3 @@
-# historical_view.py
 import pandas as pd
 import plotly.express as px
 import streamlit as st
@@ -61,6 +60,3 @@ def display(df):
     else:
         st.warning("Please select a start and end date to display the analyses.")
 
-# Example usage
-# df = pd.read_csv('path_to_your_data.csv')
-# display(df)

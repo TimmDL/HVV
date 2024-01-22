@@ -1,8 +1,8 @@
 import pandas as pd
 import re
 
-# Load your CSV file
-df = pd.read_csv('/Users/timmdill/Downloads/auditlog-all.csv')
+# Load CSV file
+df = pd.read_csv('Data/auditlog-all.csv')
 
 # Define a function to extract the number
 def extract_number(s):
@@ -13,4 +13,4 @@ def extract_number(s):
 df['Automatennr'] = df['LmuId'].apply(extract_number)
 
 # Save the modified DataFrame to a new CSV file
-df.to_csv('/Users/timmdill/Downloads/matched-auditlog-all.csv', index=False)
+df.to_csv('Data/matched-auditlog-all.csv', index=False)

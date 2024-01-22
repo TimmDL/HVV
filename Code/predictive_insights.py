@@ -1,4 +1,3 @@
-# predictive_insights.py
 import pandas as pd
 
 def basic_predictive_insights(df):

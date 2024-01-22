@@ -2,12 +2,12 @@ import pandas as pd
 import re
 
 column_names = ['EVU/Bereich', 'Automatennr', 'StatusGerät','HstName','Standplatz','Line']
-df = pd.read_excel('/Users/timmdill/Downloads/ssts_Haltestellen.xlsx', header=None, names=column_names, engine='openpyxl')
+df = pd.read_excel('Data/ssts_Haltestellen.xlsx', header=None, names=column_names, engine='openpyxl')
 
 # Drop rows where all elements are NaN
 df.dropna(how='all', inplace=True)
 
-# Define your regular expressions
+# Define regular expressions
 regex_patterns = [
     'U1',
     'U2',
@@ -34,8 +34,7 @@ def search_patterns(text):
     return last_match
 
 # Apply the function to each row in a specific column
-# Replace 'col1' with the column you want to search
 df['col6'] = df['col1'].apply(search_patterns)
 
 # Save the modified DataFrame to a new CSV file
-df.to_excel('/Users/timmdill/Downloads/clean.xlsx', index=False)
+df.to_excel('Data/clean.csv', index=False)

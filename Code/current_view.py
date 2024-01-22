@@ -12,7 +12,7 @@ color_scale = {
 }
 
 
-# Function to create aggregated view
+# Function to create aggregated view (map with the most recent states)
 def create_aggregated_view(recent_stations):
     def aggregate_info(group):
         total_machines = len(group)

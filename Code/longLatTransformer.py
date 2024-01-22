@@ -29,7 +29,7 @@ def transform_coords(x, y):
         return None, None
 
 # List all CSV files ending with '_EPSG_25832.csv'
-folder_path = '/Users/timmdill/Downloads/Geodaten Hamburg'
+folder_path = 'Data/Geodaten Hamburg'
 csv_files = [f for f in os.listdir(folder_path) if f.endswith('_EPSG_25832.csv')]
 
 # Read and store each CSV file in a list
@@ -46,4 +46,9 @@ for file in csv_files:
 appended_data = pd.concat(data_frames, ignore_index=True)
 
 # Save the combined data
-appended_data.to_csv('/Users/timmdill/Downloads/Geodaten Hamburg/combined_data.csv', index=False)
+appended_data.to_csv('Data/Geodaten Hamburg/combined_data.csv', index=False)
+
+# Save a working copy of the data to be used in main.py
+appended_data.to_csv('Data/sst_alldata.csv', index=False)
+
+

@@ -19,7 +19,8 @@ df['Timestamp'] = pd.to_datetime(df['Timestamp'])
 # Radio button for selecting the view mode
 view_mode = st.radio("Select View Mode:", ('Current Data View', 'Historical Data View'))
 
+# Pass df as an argument for selected view mode
 if view_mode == 'Current Data View':
     current_view.display(df)
 elif view_mode == 'Historical Data View':
-    historical_view.display(df)  # Pass df as an argument
+    historical_view.display(df)

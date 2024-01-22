@@ -1,0 +1,24 @@
+﻿{https://registry.gdi-de.org/id/de.hh.up}name,{https://registry.gdi-de.org/id/de.hh.up}geom,{https://registry.gdi-de.org/id/de.hh.up}dhid,{https://registry.gdi-de.org/id/de.hh.up}linien,{https://registry.gdi-de.org/id/de.hh.up}linienzahl,{https://registry.gdi-de.org/id/de.hh.up}art,{https://registry.gdi-de.org/id/de.hh.up}abfahrten,CRS
+AIRBUS (Schiffsanleger),POINT (9.840897 53.544790),de:02000:51984::519312,"62,68",2,Fähre,77,EPSG:4326
+Altona (Fischmarkt),POINT (9.952197 53.544007),de:02000:80980::809300,"61,62,68",3,Fähre,165,EPSG:4326
+Argentinienbrücke (Schiff),POINT (9.976074 53.528172),de:02000:53986::539341,73,1,Fähre,66,EPSG:4326
+Arningstraße (Schiff),POINT (9.985160 53.537006),de:02000:53989::539344,72,1,Fähre,55,EPSG:4326
+Blankenese (Schiff),POINT (9.804729 53.555989),de:02000:81980::819300,HBEL,1,Fähre,15,EPSG:4326
+Bubendey-Ufer,POINT (9.885338 53.540188),de:02000:52980::529304,"62,68",2,Fähre,139,EPSG:4326
+Cranz (Schiff),POINT (9.779558 53.534742),de:02000:51983::519311,HBEL,1,Fähre,14,EPSG:4326
+Dockland (Fischereihafen),POINT (9.935499 53.543023),de:02000:80989::819891,"61,62,68",3,Fähre,165,EPSG:4326
+Elbphilharmonie (Schiff),POINT (9.986373 53.540329),de:02000:80932::809329,72,1,Fähre,55,EPSG:4326
+Ernst-August-Schleuse (Schiff),POINT (9.981847 53.524170),de:02000:39341::9539341,73,1,Fähre,33,EPSG:4326
+Finkenwerder (Schiff),POINT (9.878859 53.536467),de:02000:51980::519304,"62,64",2,Fähre,113,EPSG:4326
+Köhlbrandhöft (nur Angehörige),POINT (9.934726 53.539654),de:02000:52979::529791,61,1,Fähre,9,EPSG:4326
+Landungsbrücken Brücke 1,POINT (9.970914 53.544897),de:02000:80984::809311,"62,72,73",3,Fähre,88,EPSG:4326
+Landungsbrücken Brücke 2,POINT (9.970594 53.544990),de:02000:80983::809309,"61,68,75",3,Fähre,38,EPSG:4326
+Landungsbrücken Brücke 3,POINT (9.969773 53.545099),de:02000:80982::809306,62,1,Fähre,69,EPSG:4326
+Neuhof (Schiff),POINT (9.940766 53.524145),de:02000:53990,61,1,Fähre,13,EPSG:4326
+Neumühlen (Schiff),POINT (9.914711 53.543532),de:02000:52982::529312,"62,68",2,Fähre,139,EPSG:4326
+Rüschpark (Schiff),POINT (9.863307 53.541570),de:02000:51981::519811,"62,64",2,Fähre,87,EPSG:4326
+Sperrwerk Neuenfelde (Schiff),POINT (9.790445 53.536104),de:02000:51982,HBEL,1,Fähre,28,EPSG:4326
+Steinwerder (Schiff),POINT (9.966493 53.540128),de:02000:53988::539346,75,1,Fähre,25,EPSG:4326
+Teufelsbrück (Schiff),POINT (9.862619 53.546496),de:02000:80981::809303,"62,64,68",3,Fähre,122,EPSG:4326
+Theater im Hafen,POINT (9.974393 53.540717),de:02000:53992::539366,73,1,Fähre,66,EPSG:4326
+Waltershof,POINT (9.937198 53.525632),de:02000:52981,61,1,Fähre,26,EPSG:4326
